@@ -1,0 +1,24 @@
+.h1-home {
+    font-size: 48px;
+    text-align: center;
+}
+
+.bicicletas-disp-size {
+    width: 100%;
+    height: 70vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bicicletas-disp-container {
+    width: 80%;
+    height: 90%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+
+}
