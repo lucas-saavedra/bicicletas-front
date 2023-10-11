@@ -34,7 +34,7 @@ function Login({ setIsLogged }) {
 		const data = { email, password, remember };
 		console.log(data);
 		axios
-			.post("auth/login", data)
+			.post("http://laravelapp.tramo4.ap/api/v1/auth/login", data)
 			.then((response) => {
 				loginSatisfactorio();
 				localStorage.setItem("token", response.data.access_token);
