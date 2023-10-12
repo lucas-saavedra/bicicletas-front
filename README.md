@@ -1,70 +1,188 @@
-# Getting Started with Create React App
+URL API : laravelapp.tramo4.ap
+URL FRONTEND:  reactapp.tramo4.ar
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Paso 1:** Reemplazar en la aplicación todas las URL.
+**Paso 2:** Modificar el .env con los datos del servidor. En mi caso, la bd es nombre\_base\_datos o base\_prueba.
 
-## Available Scripts
+El app url y demás url cambiarlas por la correcta (<http://laravelapp.tramo4.ap>)
+Agregar archivo cors en carpeta config
+Mover la aplicación de laravel a la carpeta compartida.
+Renombrarla “bicicletas-api” y copiarla en /var/www
 
-In the project directory, you can run:
+```shell
+sudo cp bicicletas-api /var/www
+```
+o 
+clonar el proyecto de github
 
-### `npm start`
+```shell
+sudo git clone https://github.com/lucas-saavedra/bicicletas-front.git
+```
+**Paso 3:**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Instalar composer
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```shell
+sudo apt install composer
+```
 
-### `npm test`
+**Paso 4:**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Instalar las extensiones de php necesarias (ext-dom y ext-curl)
 
-### `npm run build`
+  ```shell
+sudo apt-get install php8.1-dom
+sudo apt-get install php8.1-curl
+sudo service apache2 restart
+```
+  
+Ejecutar Composer install en la raíz del sistema api
+**Paso 5:**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Copiar un virtualhost de sites-available y nombrarlo laravel.conf
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Debe contener:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```html
+<VirtualHost \*:80>
+  ServerAdmin admin@hwdomain.io
+  ServerName laravelapp.tramo4.ap
+  DocumentRoot /var/www/bicicletas-api/public
+ <Directory />
+  Options FollowSymLinks
+  AllowOverride None
+ </Directory>
+ 
+ <Directory /var/www/bicicletas-api/public>
+  AllowOverride All
+ </Directory>
+  ErrorLog ${APACHE\_LOG\_DIR}/error.log
+  CustomLog ${APACHE\_LOG\_DIR}/access.log combined
+</VirtualHost>
+```
 
-### `npm run eject`
+**Paso 6 :**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Habilitar la extensión de postgresql en php.ini
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```shell
+sudo nano /etc/php/8.1/apache2/php.ini
+```
+  
+**Paso 7:**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Cargar el nuevo modulo creado.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+  ``` shell
+sudo a2ensite laravel.conf
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
 
-## Learn More
+**Paso 8:**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Modificar el archivo hosts de Windows para poder acceder al sistema mediante la URL
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+En C:/windows/system32/drivers/etc/host
 
-### Code Splitting
+```shell
+192.168.100.20 laravelapp.tramo4.ap
+192.168.100.20 reactapp.tramo4.ar
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Paso 9:**
+Buildear el proyecto de react
 
-### Analyzing the Bundle Size
+```node
+npm install
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**Paso 10:**
 
-### Making a Progressive Web App
+Renombrar la carpeta build a bicicletas-front
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Revisar que exista en la raíz el archivo .htaccess con el siguiente contenido:
 
-### Advanced Configuration
+```html
+<IfModule mod\_rewrite.c>
+ RewriteEngine On
+ RewriteBase /
+ RewriteRule ^index\.html$ - [L]
+ RewriteCond %{REQUEST\_FILENAME} !-f
+ RewriteCond %{REQUEST\_FILENAME} !-d
+ RewriteCond %{REQUEST\_FILENAME} !-l
+ RewriteRule . /index.html [L]
+</IfModule>
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Mover a la carpeta compartida y copiarlo en /var/www
 
-### Deployment
+```shell
+sudo cp bicicletas-front /var/www
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Paso 11:**
 
-### `npm run build` fails to minify
+Crear un host virtual para este sistema, copiar a partir de uno existente y nombrarlo react.conf
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+El contenido debe ser:
+
+```html
+<VirtualHost *:80>
+    ServerAdmin admin@hwdomain.io
+    ServerName reactapp.tramo4.ar
+    DocumentRoot /var/www/bicicletas-front
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
+    <Directory /var/www/bicicletas-front>
+        AllowOverride All
+    </Directory>
+    ErrorLog ${APACHE\_LOG\_DIR}/error.log
+    CustomLog ${APACHE\_LOG\_DIR}/access.log combined
+</VirtualHost>
+```
+
+**Paso 12:**
+Activar el sitio y reiniciar apache:
+
+```shell
+sudo a2ensite react.conf
+sudo systemctl restart apache2
+```
+
+**PASO 13:**
+Ir a la raíz del proyecto laravel
+
+```shell
+  cd /var/www/bicicletas-api
+```
+
+Instalar extensión de pgsql con php:
+  
+```shell
+sudo apt-get install php-pgsql
+```
+
+  o
+
+```shell
+sudo apt-get install php8.1-pgsql
+sudo service apache2 restart
+```
+  
+Dar permisos a la carpeta de logs en laravel:
+
+```shell
+sudo chmod -R 777 storage/logs
+sudo chmod -R 777 storage/framework/cache
+```
+
+Ejecutar optimize, migraciones y seed
+
+```php
+php artisan optimize
+php artisan migrate –seed
+```
